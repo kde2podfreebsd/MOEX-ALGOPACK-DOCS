@@ -1,5 +1,8 @@
 # MOEX ALGOPACK DOCS
 
+![image](https://github.com/kde2podfreebsd/MOEX-ALGOPACK-DOCS/assets/39852259/4fb790ff-d2ad-4913-bde9-73dc7069a434)
+
+
 ## Содержание
 * ### [Начало работы](https://github.com/kde2podfreebsd/MOEX-ALGOPACK-DOCS/wiki)
 * ### [Аутентификация](https://github.com/kde2podfreebsd/MOEX-ALGOPACK-DOCS/wiki/%D0%90%D1%83%D1%82%D0%B5%D0%BD%D1%82%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D1%8F)
