@@ -10,7 +10,7 @@
   * ## [Trade stats](https://github.com/kde2podfreebsd/MOEX-ALGOPACK-DOCS/wiki/Trades:-%D0%9C%D0%B5%D1%82%D0%BE%D0%B4%D0%B8%D0%BA%D0%B0-%D1%80%D0%B0%D1%81%D1%87%D0%B5%D1%82%D0%B0)
   * ## [Order stats](https://github.com/kde2podfreebsd/MOEX-ALGOPACK-DOCS/wiki/Orders:-%D0%9C%D0%B5%D1%82%D0%BE%D0%B4%D0%B8%D0%BA%D0%B0-%D1%80%D0%B0%D1%81%D1%87%D0%B5%D1%82%D0%B0)
   * ## [OrderBook stats](https://github.com/kde2podfreebsd/MOEX-ALGOPACK-DOCS/wiki/OrderBook:-%D0%9C%D0%B5%D1%82%D0%BE%D0%B4%D0%B8%D0%BA%D0%B0-%D1%80%D0%B0%D1%81%D1%87%D0%B5%D1%82%D0%B0)
-* ## Python библиотека
+* ## [Python библиотека](https://github.com/moexalgo/moexalgo)
 
 
 
