@@ -1,0 +1,1476 @@
+openapi: 3.0.0
+info:
+  title: DataShop AlgoPack API
+  description: Описание AlgoPack API
+  version: 1.0.0
+  contact:
+    name: Имя контактного лица
+    email: example@email.com
+    url: https://moex.com
+  x-chat:
+    description: Ссылка на чат в Telegram
+    url: https://t.me/yourtelegramchat
+
+servers:
+  - url: https://iss.beta.moex.com/iss/datashop/algopack
+    description: ISS - информационно статистический сервер
+
+paths:
+  /auth:
+    get:
+      summary: Авторизация пользователя
+      description: Авторизует пользователя с использованием базовой аутентификации (username, password).
+      tags:
+        - Авторизация
+      parameters:
+        - in: header
+          name: Authorization
+          description: Креденциалы пользователя в формате "Basic base64(username:password)"
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: username
+          schema:
+            type: string
+          description: Имя пользователя
+        - in: query
+          name: password
+          schema:
+            type: string
+          description: Пароль пользователя
+      responses:
+        '200':
+          description: Успешная авторизация
+          headers:
+            Set-Cookie:
+              description: Куки для авторизации
+              schema:
+                type: string
+                example: "MicexPassportCert=example_cookie_value; Path=/; Secure; HttpOnly"
+        '401':
+          description: Неудачная попытка авторизации
+
+
+
+
+##########
+  /eq/tradestats.{format}:
+    get:
+      tags:
+        - EQ - Stocks
+      summary: Получить торговые статистики для акций
+      description: Возвращает информацию о торговых статистиках для акций.
+      parameters:
+        - in: header
+          name: Cookie
+          description: Куки для авторизации
+          required: true
+          schema:
+            type: string
+          example: "MicexPassportCert=example_cookie_value"
+
+        - in: query
+          name: date
+          schema:
+            type: string
+            format: date-time
+          description: Дата в формате YYYY-MM-DD
+
+        - in: path
+          name: format
+          required: true
+          schema:
+            type: string
+            enum: [json, xml, csv, index]
+          description: Расширение ответа (json, xml, csv, index)
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeStatResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/TradeStatResponse'
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/TradeStatResponse'
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/TradeStatResponse'
+
+  /eq/tradestats/{sec_id}.{format}:
+    get:
+      tags:
+        - EQ - Stocks
+      summary: Получить торговые статистики для акции по sec_id
+      description: Возвращает информацию о торговых статистиках для конкретной акции по ее sec_id.
+      parameters:
+
+        - in: header
+          name: Cookie
+          description: Куки для авторизации
+          required: true
+          schema:
+            type: string
+          example: "MicexPassportCert=example_cookie_value"
+      
+        - in: query
+          name: start
+          schema:
+            type: integer
+            format: int32
+          description: Значение свечки, с которой начать отображение
+
+        - in: query
+          name: from
+          schema:
+            type: string
+            format: date-time
+          description: Начальная дата в формате YYYY-MM-DD
+        - in: query
+          name: till
+          schema:
+            type: string
+            format: date-time
+          description: Конечная дата в формате YYYY-MM-DD
+
+        - in: path
+          name: sec_id
+          required: true
+          schema:
+            type: string
+          description: Идентификатор акции
+        - in: path
+          name: format
+          required: true
+          schema:
+            type: string
+            enum: [json, xml, csv, index]
+          description: Расширение ответа (json, xml, csv, index)
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeStatResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/TradeStatResponse'
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/TradeStatResponse'
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/TradeStatResponse'
+
+  /eq/obstats.{format}:
+    get:
+      tags:
+        - EQ - Stocks
+      summary: Получить статистику стакана заявок для акций
+      description: Возвращает информацию о статистике стакана заявок для акций.
+      parameters:
+        - in: header
+          name: Cookie
+          description: Куки для авторизации
+          required: true
+          schema:
+            type: string
+          example: "MicexPassportCert=example_cookie_value"
+
+        - in: query
+          name: date
+          schema:
+            type: string
+            format: date-time
+          description: Дата в формате YYYY-MM-DD
+
+        - in: path
+          name: format
+          required: true
+          schema:
+            type: string
+            enum: [json, xml, csv, index]
+          description: Расширение ответа (json, xml, csv, index)
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObStatResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ObStatResponse'
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/ObStatResponse'
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/ObStatResponse'
+
+  /eq/obstats/{sec_id}.{format}:
+    get:
+      tags:
+        - EQ - Stocks
+      summary: Получить статистику стакана заявок для акции по sec_id
+      description: Возвращает информацию о статистике стакана заявок для конкретной акции по ее sec_id.
+      parameters:
+        - in: header
+          name: Cookie
+          description: Куки для авторизации
+          required: true
+          schema:
+            type: string
+          example: "MicexPassportCert=example_cookie_value"
+
+        - in: query
+          name: start
+          schema:
+            type: integer
+            format: int32
+          description: Значение свечки, с которой начать отображение
+
+        - in: query
+          name: from
+          schema:
+            type: string
+            format: date-time
+          description: Начальная дата в формате YYYY-MM-DD
+        - in: query
+          name: till
+          schema:
+            type: string
+            format: date-time
+          description: Конечная дата в формате YYYY-MM-DD
+
+        - in: path
+          name: sec_id
+          required: true
+          schema:
+            type: string
+          description: Идентификатор акции
+        - in: path
+          name: format
+          required: true
+          schema:
+            type: string
+            enum: [json, xml, csv, index]
+          description: Расширение ответа (json, xml, csv, index)
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObStatResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ObStatResponse'
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/ObStatResponse'
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/ObStatResponse'
+
+  /eq/orderstats.{format}:
+    get:
+      tags:
+        - EQ - Stocks
+      summary: Получить статистику ордеров для акций
+      description: Возвращает информацию о статистике ордеров для акций.
+      parameters:
+        - in: header
+          name: Cookie
+          description: Куки для авторизации
+          required: true
+          schema:
+            type: string
+          example: "MicexPassportCert=example_cookie_value"
+
+        - in: query
+          name: date
+          schema:
+            type: string
+            format: date-time
+          description: Дата в формате YYYY-MM-DD
+
+        - in: path
+          name: format
+          required: true
+          schema:
+            type: string
+            enum: [json, xml, csv, index]
+          description: Расширение ответа (json, xml, csv, index)
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderStatResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/OrderStatResponse'
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/OrderStatResponse'
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/OrderStatResponse'
+
+  /eq/orderstats/{sec_id}.{format}:
+    get:
+      tags:
+        - EQ - Stocks
+      summary: Получить статистику ордеров для акции по sec_id
+      description: Возвращает информацию о статистике ордеров для конкретной акции по ее sec_id.
+      parameters:
+        - in: header
+          name: Cookie
+          description: Куки для авторизации
+          required: true
+          schema:
+            type: string
+          example: "MicexPassportCert=example_cookie_value"
+
+        - in: query
+          name: start
+          schema:
+            type: integer
+            format: int32
+          description: Значение свечки, с которой начать отображение
+          
+        - in: query
+          name: from
+          schema:
+            type: string
+            format: date-time
+          description: Начальная дата в формате YYYY-MM-DD
+        - in: query
+          name: till
+          schema:
+            type: string
+            format: date-time
+          description: Конечная дата в формате YYYY-MM-DD
+
+        - in: path
+          name: sec_id
+          required: true
+          schema:
+            type: string
+          description: Идентификатор акции
+        - in: path
+          name: format
+          required: true
+          schema:
+            type: string
+            enum: [json, xml, csv, index]
+          description: Расширение ответа (json, xml, csv, index)
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderStatResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/OrderStatResponse'
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/TradeStatResponse'
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/TradeStatResponse'
+
+  /fo/tradestats.{format}:
+    get:
+      tags:
+        - FO - Futures
+      summary: Получить торговые статистики для фьючерсов
+      description: Возвращает информацию о торговых статистиках для фьючерсов.
+      parameters:
+        - in: header
+          name: Cookie
+          description: Куки для авторизации
+          required: true
+          schema:
+            type: string
+          example: "MicexPassportCert=example_cookie_value"
+
+        - in: query
+          name: date
+          schema:
+            type: string
+            format: date-time
+          description: Дата в формате YYYY-MM-DD
+
+        - in: path
+          name: format
+          required: true
+          schema:
+            type: string
+            enum: [json, xml, csv, index]
+          description: Расширение ответа (json, xml, csv, index)
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeStatResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/TradeStatResponse'
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/TradeStatResponse'
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/TradeStatResponse'
+
+  /fo/tradestats/{sec_id}.{format}:
+    get:
+      tags:
+        - FO - Futures
+      summary: Получить торговые статистики для фьючерсов по sec_id
+      description: Возвращает информацию о торговых статистиках для конкретного фьючерса по его ID.
+      parameters:
+        - in: header
+          name: Cookie
+          description: Куки для авторизации
+          required: true
+          schema:
+            type: string
+          example: "MicexPassportCert=example_cookie_value"
+
+        - in: query
+          name: start
+          schema:
+            type: integer
+            format: int32
+          description: Значение свечки, с которой начать отображение
+
+        - in: query
+          name: from
+          schema:
+            type: string
+            format: date-time
+          description: Начальная дата в формате YYYY-MM-DD
+        - in: query
+          name: till
+          schema:
+            type: string
+            format: date-time
+          description: Конечная дата в формате YYYY-MM-DD
+
+        - in: path
+          name: sec_id
+          required: true
+          schema:
+            type: string
+          description: Идентификатор фьючерса
+        - in: path
+          name: format
+          required: true
+          schema:
+            type: string
+            enum: [json, xml, csv, index]
+          description: Расширение ответа (json, xml, csv, index)
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeStatResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/TradeStatResponse'
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/TradeStatResponse'
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/TradeStatResponse'
+
+
+  /fo/obstats.{format}:
+    get:
+      tags:
+        - FO - Futures
+      summary: Получить статистику стакана заявок для фьючерсов
+      description: Возвращает информацию о статистике стакана заявок для фьючерсов.
+      parameters:
+        - in: header
+          name: Cookie
+          description: Куки для авторизации
+          required: true
+          schema:
+            type: string
+          example: "MicexPassportCert=example_cookie_value"
+
+        - in: query
+          name: date
+          schema:
+            type: string
+            format: date-time
+          description: Дата в формате YYYY-MM-DD
+
+        - in: path
+          name: format
+          required: true
+          schema:
+            type: string
+            enum: [json, xml, csv, index]
+          description: Расширение ответа (json, xml, csv, index)
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObStatResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ObStatResponse'
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/ObStatResponse'
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/ObStatResponse'
+
+  /fo/obstats/{sec_id}.{format}:
+    get:
+      tags:
+        - FO - Futures
+      summary: Получить статистику стакана заявок для фьючерса по sec_id
+      description: Возвращает информацию о статистике стакана заявок для конкретного фьючерса по его ID.
+      parameters:
+        - in: header
+          name: Cookie
+          description: Куки для авторизации
+          required: true
+          schema:
+            type: string
+          example: "MicexPassportCert=example_cookie_value"
+
+        - in: query
+          name: start
+          schema:
+            type: integer
+            format: int32
+          description: Значение свечки, с которой начать отображение
+
+        - in: query
+          name: from
+          schema:
+            type: string
+            format: date-time
+          description: Начальная дата в формате YYYY-MM-DD
+        - in: query
+          name: till
+          schema:
+            type: string
+            format: date-time
+          description: Конечная дата в формате YYYY-MM-DD
+
+        - in: path
+          name: sec_id
+          required: true
+          schema:
+            type: string
+          description: Идентификатор фьючерса
+        - in: path
+          name: format
+          required: true
+          schema:
+            type: string
+            enum: [json, xml, csv, index]
+          description: Расширение ответа (json, xml, csv, index)
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObStatResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ObStatResponse'
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/ObStatResponse'
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/ObStatResponse'
+
+
+  /fx/tradestats.{format}:
+    get:
+      tags:
+        - FX - Currency
+      summary: Получить торговые статистики для валюты
+      description: Возвращает информацию о торговых статистиках для валюты.
+      parameters:
+        - in: header
+          name: Cookie
+          description: Куки для авторизации
+          required: true
+          schema:
+            type: string
+          example: "MicexPassportCert=example_cookie_value"
+      
+        - in: query
+          name: date
+          schema:
+            type: string
+            format: date-time
+          description: Дата в формате YYYY-MM-DD
+
+        - in: path
+          name: format
+          required: true
+          schema:
+            type: string
+            enum: [json, xml, csv, index]
+          description: Расширение ответа (json, xml, csv, index)
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeStatResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/TradeStatResponse'
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/TradeStatResponse'
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/TradeStatResponse'
+
+  /fx/tradestats/{sec_id}.{format}:
+    get:
+      tags:
+        - FX - Currency
+      summary: Получить торговые статистики для валюты по sec_id
+      description: Возвращает информацию о торговых статистиках для конкретной валюты по ее sec_id.
+      parameters:
+        - in: header
+          name: Cookie
+          description: Куки для авторизации
+          required: true
+          schema:
+            type: string
+          example: "MicexPassportCert=example_cookie_value"
+
+        - in: query
+          name: start
+          schema:
+            type: integer
+            format: int32
+          description: Значение свечки, с которой начать отображение
+
+        - in: query
+          name: from
+          schema:
+            type: string
+            format: date-time
+          description: Начальная дата в формате YYYY-MM-DD
+        - in: query
+          name: till
+          schema:
+            type: string
+            format: date-time
+          description: Конечная дата в формате YYYY-MM-DD
+
+        - in: path
+          name: sec_id
+          required: true
+          schema:
+            type: string
+          description: Идентификатор валюты
+        - in: path
+          name: format
+          required: true
+          schema:
+            type: string
+            enum: [json, xml,            csv, index]
+          description: Расширение ответа (json, xml, csv, index)
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradeStatResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/TradeStatResponse'
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/TradeStatResponse'
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/TradeStatResponse'
+
+  /fx/obstats.{format}:
+    get:
+      tags:
+        - FX - Currency
+      summary: Получить статистику стакана заявок для валюты
+      description: Возвращает информацию о статистике стакана заявок для валюты.
+      parameters:
+        - in: header
+          name: Cookie
+          description: Куки для авторизации
+          required: true
+          schema:
+            type: string
+          example: "MicexPassportCert=example_cookie_value"
+
+        - in: query
+          name: date
+          schema:
+            type: string
+            format: date-time
+          description: Дата в формате YYYY-MM-DD
+
+        - in: path
+          name: format
+          required: true
+          schema:
+            type: string
+            enum: [json, xml, csv, index]
+          description: Расширение ответа (json, xml, csv, index)
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObStatResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ObStatResponse'
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/ObStatResponse'
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/ObStatResponse'
+
+  /fx/obstats/{sec_id}.{format}:
+    get:
+      tags:
+        - FX - Currency
+      summary: Получить статистику стакана заявок для валюты по sec_id
+      description: Возвращает информацию о статистике стакана заявок для конкретной валюты по ее sec_id.
+      parameters:
+        - in: header
+          name: Cookie
+          description: Куки для авторизации
+          required: true
+          schema:
+            type: string
+          example: "MicexPassportCert=example_cookie_value"
+
+        - in: query
+          name: start
+          schema:
+            type: integer
+            format: int32
+          description: Значение свечки, с которой начать отображение
+
+        - in: query
+          name: from
+          schema:
+            type: string
+            format: date-time
+          description: Начальная дата в формате YYYY-MM-DD
+        - in: query
+          name: till
+          schema:
+            type: string
+            format: date-time
+          description: Конечная дата в формате YYYY-MM-DD
+
+        - in: path
+          name: sec_id
+          required: true
+          schema:
+            type: string
+          description: Идентификатор валюты
+        - in: path
+          name: format
+          required: true
+          schema:
+            type: string
+            enum: [json, xml, csv, index]
+          description: Расширение ответа (json, xml, csv, index)
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObStatResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ObStatResponse'
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/ObStatResponse'
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/ObStatResponse'
+
+  /fx/orderstats.{format}:
+    get:
+      tags:
+        - FX - Currency
+      summary: Получить статистику ордеров для валюты
+      description: Возвращает информацию о статистике ордеров для валюты.
+      parameters:
+        - in: header
+          name: Cookie
+          description: Куки для авторизации
+          required: true
+          schema:
+            type: string
+          example: "MicexPassportCert=example_cookie_value"
+
+        - in: query
+          name: date
+          schema:
+            type: string
+            format: date-time
+          description: Дата в формате YYYY-MM-DD
+
+        - in: path
+          name: format
+          required: true
+          schema:
+            type: string
+            enum: [json, xml, csv, index]
+          description: Расширение ответа (json, xml, csv, index)
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderStatResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/OrderStatResponse'
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/OrderStatResponse'
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/OrderStatResponse'
+
+  /fx/orderstats/{sec_id}.{format}:
+    get:
+      tags:
+        - FX - Currency
+      summary: Получить статистику ордеров для валюты по sec_id
+      description: Возвращает информацию о статистике ордеров для конкретной валюты по ее sec_id.
+      parameters:
+        - in: header
+          name: Cookie
+          description: Куки для авторизации
+          required: true
+          schema:
+            type: string
+          example: "MicexPassportCert=example_cookie_value"
+          
+        - in: query
+          name: start
+          schema:
+            type: integer
+            format: int32
+          description: Значение свечки, с которой начать отображение
+
+        - in: query
+          name: from
+          schema:
+            type: string
+            format: date-time
+          description: Начальная дата в формате YYYY-MM-DD
+        - in: query
+          name: till
+          schema:
+            type: string
+            format: date-time
+          description: Конечная дата в формате YYYY-MM-DD
+
+        - in: path
+          name: sec_id
+          required: true
+          schema:
+            type: string
+          description: Идентификатор валюты
+        - in: path
+          name: format
+          required: true
+          schema:
+            type: string
+            enum: [json, xml, csv, index]
+          description: Расширение ответа (json, xml, csv, index)
+      responses:
+        '200':
+          description: Успешный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderStatResponse'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/OrderStatResponse'
+            text/csv:
+              schema:
+                $ref: '#/components/schemas/OrderStatResponse'
+            application/octet-stream:
+              schema:
+                $ref: '#/components/schemas/OrderStatResponse'
+
+
+
+components:
+  schemas:
+    TradeStatResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/TradeStatData'
+        cursor:
+          $ref: '#/components/schemas/TradeStatCursor'
+        dates:
+          $ref: '#/components/schemas/TradeStatDates'
+
+    ObStatResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ObStatData'
+        cursor:
+          $ref: '#/components/schemas/ObStatCursor'
+        dates:
+          $ref: '#/components/schemas/ObStatDates'
+
+    OrderStatResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/OrderStatData'
+        cursor:
+          $ref: '#/components/schemas/OrderStatCursor'
+        dates:
+          $ref: '#/components/schemas/OrderStatDates'
+
+
+
+    TradeStatData:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/TradeStatMetadata'
+        columns:
+          type: array
+          items:
+            type: string
+        data:
+          type: array
+          items:
+            type: array
+            items:
+              oneOf:
+                - type: string
+                - type: number
+
+    TradeStatCursor:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/TradeStatCursorMetadata'
+        columns:
+          type: array
+          items:
+            type: string
+        data:
+          type: array
+          items:
+            type: array
+            items:
+              type: integer
+
+    TradeStatDates:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/TradeStatDatesMetadata'
+        columns:
+          type: array
+          items:
+            type: string
+        data:
+          type: array
+          items:
+            type: array
+            items:
+              type: string
+              format: date
+
+    TradeStatMetadata:
+      type: object
+      properties:
+        tradedate:
+          type: string
+          format: date
+          description: Дата сделки
+        tradetime:
+          type: string
+          format: time
+          description: Время сделки
+        secid:
+          type: string
+          description: Идентификатор ценной бумаги
+        pr_open:
+          type: number
+          format: double
+          description: Цена открытия
+        pr_high:
+          type: number
+          format: double
+          description: Максимальная цена
+        pr_low:
+          type: number
+          format: double
+          description: Минимальная цена
+        pr_close:
+          type: number
+          format: double
+          description: Цена закрытия
+        pr_std:
+          type: number
+          format: double
+          description: Стандартное отклонение цены
+        vol:
+          type: integer
+          description: Объем сделок
+        val:
+          type: number
+          format: double
+          description: Объем в валюте
+        trades:
+          type: integer
+          description: Количество сделок
+        pr_vwap:
+          type: number
+          format: double
+          description: Взвешенная средняя цена
+        pr_change:
+          type: number
+          format: double
+          description: Изменение цены
+        trades_b:
+          type: integer
+          description: Количество покупок
+        trades_s:
+          type: integer
+          description: Количество продаж
+        val_b:
+          type: number
+          format: double
+          description: Объем покупок
+        val_s:
+          type: number
+          format: double
+          description: Объем продаж
+        vol_b:
+          type: integer
+          description: Объем покупок
+        vol_s:
+          type: integer
+          description: Объем продаж
+        disb:
+          type: number
+          format: double
+          description: Разница между ценами покупки и продажи
+        pr_vwap_b:
+          type: number
+          format: double
+          description: Взвешенная средняя цена покупки
+        pr_vwap_s:
+          type: number
+          format: double
+          description: Взвешенная средняя цена продажи
+        SYSTIME:
+          type: string
+          format: datetime
+          description: Время получения данных
+
+    TradeStatCursorMetadata:
+      type: object
+      properties:
+        INDEX:
+          type: integer
+          description: Индекс
+        TOTAL:
+          type: integer
+          description: Общее количество записей
+        PAGESIZE:
+          type: integer
+          description: Размер страницы
+
+    TradeStatDatesMetadata:
+      type: object
+      properties:
+        from:
+          type: string
+          format: date
+          description: Начальная дата
+        till:
+          type: string
+          format: date
+          description: Конечная дата
+
+    ObStatData:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ObStatMetadata'
+        columns:
+          type: array
+          items:
+            type: string
+        data:
+          type: array
+          items:
+            type: array
+            items:
+              oneOf:
+                - type: string
+                - type: number
+
+    ObStatCursor:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ObStatCursorMetadata'
+        columns:
+          type: array
+          items:
+            type: string
+        data:
+          type: array
+          items:
+            type: array
+            items:
+              type: integer
+
+    ObStatDates:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ObStatDatesMetadata'
+        columns:
+          type: array
+          items:
+            type: string
+        data:
+          type: array
+          items:
+            type: array
+            items:
+              type: string
+              format: date
+
+    ObStatMetadata:
+      type: object
+      properties:
+        tradedate:
+          type: string
+          format: date
+          description: Дата сделки
+        tradetime:
+          type: string
+          format: time
+          description: Время сделки
+        secid:
+          type: string
+          description: Идентификатор ценной бумаги
+        spread_bbo:
+          type: number
+          format: double
+          description: Спред между лучшей ценой покупки и продажи
+        spread_lv10:
+          type: number
+          format: double
+          description: Спред между 10ым уровнем цен
+        spread_1mio:
+          type: number
+          format: double
+          description: Спред на 1 млн руб
+        levels_b:
+          type: integer
+          description: Кол-во уровней цен в стакане (покупка)
+        levels_s:
+          type: integer
+          description: Кол-во уровней цен в стакане (продажа)
+        vol_b:
+          type: integer
+          description: Совокупный объем заявок в стакане на всех уровнях (покупка)
+        vol_s:
+          type: integer
+          description: Совокупный объем заявок в стакане на всех уровнях (продажа)
+        val_b:
+          type: integer
+          description: Совокупный объем заявок в стакане на всех уровнях (покупка), руб
+        val_s:
+          type: integer
+          description: Совокупный объем заявок в стакане на всех уровнях (продажа), руб
+        imbalance_vol_bbo:
+          type: number
+          format: double
+          description: Дисбаланс объема по лучшим ценам
+        imbalance_val_bbo:
+          type: number
+          format: double
+          description: Дисбаланс объема (руб) по лучшим ценам
+        imbalance_vol:
+          type: number
+          format: double
+          description: Дисбаланс объема на всем стакане (все уровни)
+        imbalance_val:
+          type: number
+          format: double
+          description: Дисбаланс объема (руб) на всем стакане (все уровни)
+        vwap_b:
+          type: number
+          format: double
+          description: Средневзвешенная цена покупки в стакане
+        vwap_s:
+          type: number
+          format: double
+          description: Средневзвешенная цена продажи в стакане
+        vwap_b_1mio:
+          type: number
+          format: double
+          description: Цена покупки актива на 1 млн руб
+        vwap_s_1mio:
+          type: number
+          format: double
+          description: Цена продажи актива на 1 млн руб
+        SYSTIME:
+          type: string
+          format: datetime
+          description: Время получения данных
+
+    ObStatCursorMetadata:
+      type: object
+      properties:
+        INDEX:
+          type: integer
+          description: Индекс
+        TOTAL:
+          type: integer
+          description: Общее количество записей
+        PAGESIZE:
+          type: integer
+          description: Размер страницы
+
+    ObStatDatesMetadata:
+      type: object
+      properties:
+        from:
+          type: string
+          format: date
+          description: Начальная дата
+        till:
+          type: string
+          format: date
+          description: Конечная дата
+
+    OrderStatData:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/OrderStatMetadata'
+        columns:
+          type: array
+          items:
+            type: string
+        data:
+          type: array
+          items:
+            type: array
+            items:
+              oneOf:
+                - type: string
+                - type: number
+
+    OrderStatCursor:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/OrderStatCursorMetadata'
+        columns:
+          type: array
+          items:
+            type: string
+        data:
+          type: array
+          items:
+            type: array
+            items:
+              type: integer
+
+    OrderStatDates:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/OrderStatDatesMetadata'
+        columns:
+          type: array
+          items:
+            type: string
+        data:
+          type: array
+          items:
+            type: array
+            items:
+              type: string
+              format: date
+
+    OrderStatMetadata:
+      type: object
+      properties:
+        tradedate:
+          type: string
+          format: date
+          description: Дата сделки
+        tradetime:
+          type: string
+          format: time
+          description: Время сделки
+        secid:
+          type: string
+          description: Идентификатор ценной бумаги
+        put_orders:
+          type: integer
+          description: Количество поставленных в стакан сделок
+        put_orders_b:
+          type: integer
+          description: Количество поставленных в стакан сделок на покупку
+        put_orders_s:
+          type: integer
+          description: Количество поставленных в стакан сделок на продажу
+        put_vol:
+          type: integer
+          description: Объем заявок в лотах, поставленных в стакан
+        put_vol_b:
+          type: integer
+          description: Объем заявок в лотах, поставленных в стакан сделок на покупку
+        put_vol_s:
+          type: integer
+          description: Объем заявок в лотах, поставленных в стакан сделок на продажу
+        put_val:
+          type: number
+          format: double
+          description: Объем в деньгах заявок поставленных в стакан
+        put_val_b:
+          type: number
+          format: double
+          description: Объем в деньгах заявок поставленных в стакан на покупку
+        put_val_s:
+          type: number
+          format: double
+          description: Объем в деньгах заявок поставленных в стакан на продажу
+        cancel_orders:
+          type: integer
+          description: Количество снятых заявок
+        cancel_orders_b:
+          type: integer
+          description: Количество снятых заявок на покупку
+        cancel_orders_s:
+          type: integer
+          description: Количество снятых заявок на продажу
+        cancel_vol:
+          type: integer
+          description: Объем снятых заявок в лотах
+        cancel_vol_b:
+          type: integer
+          description: Объем снятых заявок в лотах на покупку
+        cancel_vol_s:
+          type: integer
+          description: Объем снятых заявок в лотах на продажу
+        cancel_val:
+          type: number
+          format: double
+          description: Объем в деньгах снятых заявок
+        cancel_val_b:
+          type: number
+          format: double
+          description: Объем в деньгах снятых заявок на покупку
+        cancel_val_s:
+          type: number
+          format: double
+          description: Объем в деньгах снятых заявок на продажу
+        put_vwap_b:
+          type: number
+          format: double
+          description: Средневзвешенная цена поставленных заявок на покупку
+        put_vwap_s:
+          type: number
+          format: double
+          description: Средневзвешенная цена поставленных заявок на продажу
+        cancel_vwap_b:
+          type: number
+          format: double
+          description: Средневзвешенная цена отмененных заявок на покупку
+        cancel_vwap_s:
+          type: number
+          format: double
+          description: Средневзвешенная цена отмененных заявок на продажу
+        SYSTIME:
+          type: string
+          format: datetime
+          description: Время получения данных
+
+    OrderStatCursorMetadata:
+      type: object
+      properties:
+        INDEX:
+          type: integer
+          description: Индекс
+        TOTAL:
+          type: integer
+          description: Общее количество записей
+        PAGESIZE:
+          type: integer
+          description: Размер страницы
+
+    OrderStatDatesMetadata:
+      type: object
+      properties:
+        from:
+          type: string
+          format: date
+          description: Начальная дата
+        till:
+          type: string
+          format: date
+          description: Конечная дата
